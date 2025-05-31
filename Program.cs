@@ -31,7 +31,7 @@ app.MapGet("/", () => Results.Content(@"
     </head>
     <body>
         <h2>Hello from .NET 8 running on Azure App Service!</h2>
-        <p>This is release V 1.6</p>
+        <p>This is release V 1.3</p>
         <p>We are on our third deployment</p>
 
         <h2>CPU Burn Test App</h2>
@@ -69,10 +69,19 @@ app.MapGet("/stop", () => {
 });
 
 app.MapGet("/cpu", () => {
-    var cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-    cpuCounter.NextValue();
-    Thread.Sleep(500);
-    return Math.Round(cpuCounter.NextValue(), 2);
+    var process = Process.GetCurrentProcess();
+    var startTime = DateTime.UtcNow;
+    var startCpuUsage = process.TotalProcessorTime;
+    Thread.Sleep(500); // measurement window
+    var endTime = DateTime.UtcNow;
+    var endCpuUsage = process.TotalProcessorTime;
+
+    var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
+    var totalMsPassed = (endTime - startTime).TotalMilliseconds;
+    var cpuUsageTotal = (cpuUsedMs / (Environment.ProcessorCount * totalMsPassed)) * 100;
+
+    return Math.Round(cpuUsageTotal, 2);
 });
+
 
 app.Run();
