@@ -31,7 +31,7 @@ app.MapGet("/", () => Results.Content(@"
     </head>
     <body>
         <h2>Hello from .NET 8 running on Azure App Service!</h2>
-        <p>This is release V 1.3</p>
+        <p>This is release V 1.5</p>
         <p>We are on our third deployment</p>
 
         <h2>CPU Burn Test App</h2>
